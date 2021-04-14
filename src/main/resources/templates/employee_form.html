@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<link rel="stylesheet"
+	th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" />
+
+<title th:if="${employee.name==null} or ${employee.name==0}">Create
+	New Employee Entry</title>
+<title th:unless="${employee.empid==null} or ${employee.empid==0}">Edit
+	Existing Employee Record</title>
+
+</head>
+<body>
+
+
+	<div>
+		<h1 th:unless="${employee.empid==null} or ${employee.empid==0}">Edit
+			Existing Record</h1>
+		<h1 th:if="${employee.name==null} or ${employee.name==0}">Create
+			New Employee Record</h1>
+	</div>
+	<br>
+
+	<form th:action="@{/employees/add}" th:object="${employee}"
+		method="POST">
+		<div>
+			<label class="form-label"> Employee ID : </label>
+			<div th:unless="${employee.empid==null} or ${employee.empid==0}">
+				<input type="text" th:field="*{Empid}" onfocus="blur();"
+					class="col-sm-3 form-control" readonly />
+			</div>
+			<!-- temporarily useless line of code -->
+			<div th:if="${employee.empid==null} or ${employee.empid==0}">
+				<input type="text" th:field="*{Empid}" class="col-sm-3 form-control" placeholder=""/>
+			</div>
+		</div>
+		<div>
+			<label class="form-label"> Employee Name : </label>
+			<div>
+				<input type="text" th:field="*{Name}" class="col-sm-3 form-control" />
+			</div>
+		</div>
+
+		<div>
+			<label class="form-label"> Employee Salary : </label>
+			<div>
+				<input type="text" th:field="*{Salary}"
+					class="col-sm-3 form-control" />
+			</div>
+		</div>
+		<div>
+			<label class="form-label"> Employee Email : </label>
+			<div>
+				<input type="text" th:field="*{Email}" class="col-sm-3 form-control" />
+			</div>
+		</div>
+		<div>
+			<label class="form-label"> Employee Job Name : </label>
+			<div>
+				<input type="text" th:field="*{Jobname}"
+					class="col-sm-3 form-control" />
+			</div>
+		</div>
+		<div>
+			<label class="form-label"> Employee Department : </label>
+			<div>
+				<select th:field="*{Department}" class="col-sm-3 form-control"
+					required>
+					<th:block th:each="dept : ${listDepartments}">
+						<option th:text="${dept.dname}" th:value="${dept.did}" />
+					</th:block>
+				</select>
+			</div>
+		</div>
+		<br>
+		<div>
+			<div th:if="${employee.name==null} or ${employee.name==0}">
+				<button type="submit" name="add" value="add" class="btn btn-info">Add</button>
+			</div>
+
+			<div th:unless="${employee.name==null} or ${employee.name==0}">
+				<button type="submit" name="edit" value="edit" class="btn btn-info">Edit</button>
+			</div>
+		</div>
+	</form>
+	<br>
+	<a th:href="@{/employees}" class="btn btn-info">Back</a>
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+<meta charset="ISO-8859-1">
+
+<meta name="google-signin-client_id" content="978528847719-m8hm0gafefmp7nkkk5rpkp3mbj512kc3.apps.googleusercontent.com">
+<title>Inventory Home Page</title>
+
+<link href="webcss.css" rel="stylesheet">
+<link href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css' rel='stylesheet'>
+<link href='https://use.fontawesome.com/releases/v5.8.1/css/all.css' rel='stylesheet'>
+<script type='text/javascript'src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js'></script>
+<script type='text/javascript'src='https://stackpath.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.bundle.min.js'></script>
+<script src="https://apis.google.com/js/platform.js?onload=onLoad" async="true" defer></script>
+<script type="text/javascript" src="/webjars/js-cookie/js.cookie.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+
+
+<script>
+	function signOut() {
+		console.log("triggered the function");
+
+		gapi.load('auth2', function() {
+			gapi.auth2.init();
+
+			var auth2 = gapi.auth2.getAuthInstance();
+
+			console.log("auth 2 value: " + auth2);
+
+			auth2.signOut().then(function() {
+				console.log('User signed out.');
+			});
+
+		});
+
+		//this is not working
+		FB.logout();
+	}
+
+	function onLoad() {
+		gapi.load('auth2', function() {
+			gapi.auth2.init();
+		});
+	}
+	
+	window.fbAsyncInit = function() {
+		FB.init({
+			appId : '1078428542678071',
+			autoLogAppEvents : true,
+			xfbml : true,
+			version : 'v10.0'
+		});
+	};
+</script>
+
+
+
+
+
+</head>
+<body oncontextmenu='return false' class='snippet-body'>
+	<div class="container">
+		<div class="row">
+			<div class="col-md-6">
+				<div class="box">
+					<div>
+						<div align="center" sec:authorize="isAuthenticated()" style="color:white">
+							Welcome <b><span sec:authentication="name">Username</span>
+							<span id="user"></span></b> &nbsp; <i>
+							<span sec:authentication="principal.authorities">Roles</span></i>
+						</div>
+						<br>
+						<h1 style="color: white">Employee Management System</h1>
+						<div class="p-2">
+							<a class="h2" th:href="@{/employees}" style="color: blue">List of Employees</a>
+						</div>
+						<div class="p-2">
+							<a class="h2" th:href="@{/department}" style="color: blue">List of Departments</a>
+						</div>
+					</div>
+					<br>
+					<div class="container authenticated">
+
+						<!-- Testing the logout of google api but still fails.. 
+			  Logged in as: <span id="user"></span>
+			  <div>
+			    <button onClick="signOut();" class="btn btn-primary">Logout</button>
+			  </div> -->
+						<a th:href="@{/logout}" class="btn btn-danger btn-lg"
+							onclick="signOut();">Log Out</a>
+					</div>
+					<br>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<link rel="stylesheet"
+	th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" />
+
+<title th:if="${department.did==null} or ${department.did==0}">Create
+	New Department Entry</title>
+<title th:unless="${department.did==null} or ${department.did==0}">Edit
+	Existing Department Record</title>
+
+</head>
+<body>
+
+
+
+	<div th:switch="${department.did == null} or ${department.did == 0}">
+		<h1 th:case="${true}">Create New Department Record</h1>
+		<h1 th:case="*">Edit Existing Department Record</h1>
+	</div>
+<br>
+
+
+	<form th:action="@{/department/add}" th:object="${department}"
+		method="POST">
+		<div>
+			<label class="form-label"> Department ID : </label>
+			<div th:unless="${department.did==null} or ${department.did==0}">
+				<input type="text" th:field="*{Did}" onfocus="blur();"
+					class="col-sm-3 form-control" readonly />
+			</div>
+			<div th:if="${department.did==null} or ${department.did==0}">
+				<input type="text" th:field="*{Did}" class="col-sm-3 form-control" />
+			</div>
+		</div>
+		<div>
+			<label class="form-label"> Department Name : </label>
+			<div>
+				<input type="text" th:field="*{Dname}" class="col-sm-3 form-control" />
+			</div>
+		</div>
+
+		<div>
+			<label class="form-label"> Address : </label>
+			<div>
+				<input type="text" th:field="*{Address}"
+					class="col-sm-3 form-control" />
+			</div>
+		</div>
+		<br>
+		<div>
+			<div th:if="${department.did==null} or ${department.did==0}">
+				<button type="submit" name="add" value="add" class="btn btn-info">Add</button>
+			</div>
+			<div th:unless="${department.did==null} or ${department.did==0}">
+				<button type="submit" name="edit" value="edit" class="btn btn-info">Edit</button>
+			</div>
+		</div>
+		<br>
+	</form>
+	<a th:href="@{/department}" class="btn btn-info">Back</a>
+</body>
+</html>

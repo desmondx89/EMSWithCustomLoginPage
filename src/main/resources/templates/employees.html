@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+<meta charset="ISO-8859-1">
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js" type="text/javascript"></script>
+<script	src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"	type="text/javascript"></script>
+<script	src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" type="text/javascript"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+
+
+
+<!-- <script src="../static/main.js" type="text/javascript"
+	th:src="@{/main.js}"></script> -->
+
+<title>List Employees</title>
+
+</head>
+<body>
+
+	<div>
+		<h1>Employee List</h1>
+		<br>
+		<nav
+			class="navbar navbar-expand-lg navbar navbar-dark bg-primary justify-content-between">
+			<div class="container-fluid">
+
+				<a class="navbar-brand" href="/"> <img
+					th:src="@{/google-home-logo.png}" class="d-inline-block align-top"
+					height="30" width="30">
+				</a>
+				<button class="navbar-toggler" type="button"
+					data-toggle="collapse" data-target="#navbarSupportedContent"
+					aria-controls="navbarSupportedContent" aria-expanded="false"
+					aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				<div class="collapse navbar-collapse justify-content-between"
+					id="navbarSupportedContent">
+					<div>
+						<a class="nav-link active btn btn-secondary btn-lg"
+							aria-current="page" href="/department">Departments</a>
+					</div>
+					<div>
+						<a class="nav-link active btn btn-secondary btn-lg"
+							aria-current="page" href="/employees">Employees</a>
+					</div>
+					<div>
+						<a class="nav-link active btn btn-danger btn-lg" href="/logout">Log
+							Out</a>
+					</div>
+					<div>
+						<form th:action="@{/epage/1}"
+							class="nav-item form-inline my-2 my-lg-0">
+							<div>
+
+								<input class="form-control mr-sm-2" type="hidden"
+									name="sortField" th:value="${sortField}"></input> <input
+									class="form-control mr-sm-2" type="hidden" name="sortDir"
+									th:value="${sortDir}"> <span style="color: white">Filter:</span>
+							</div>
+							<div>
+								<input type="text" name="keyword" th:value="${keyword}"
+									class="form-control" /></input> <input type="submit" value="Search"
+									class="form-control btn btn-success my-2 my-sm-0"></input> <input
+									type="button" value="Clear" onClick="clearFilter()"
+									class="form-control btn btn-success my-2 my-sm-0"></input>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</nav>
+
+
+		<br>
+		<div>
+			<table border="1" class="table table-bordered" id="table">
+				<thead>
+					<tr align="center">
+						<th><a
+							th:href="@{'/epage/' + ${currentPage} + '?sortField=empid&sortDir=' + ${reverseSortDir}}">
+								Employee ID </a></th>
+						<th><a
+							th:href="@{'/epage/' + ${currentPage} + '?sortField=name&sortDir=' + ${reverseSortDir}}">
+								Name </a></th>
+						<th><a
+							th:href="@{'/epage/' + ${currentPage} + '?sortField=salary&sortDir=' + ${reverseSortDir}}">
+								Salary </a></th>
+						<th><a
+							th:href="@{'/epage/' + ${currentPage} + '?sortField=email&sortDir=' + ${reverseSortDir}}">
+								Email </a></th>
+						<th><a
+							th:href="@{'/epage/' + ${currentPage} + '?sortField=jobname&sortDir=' + ${reverseSortDir}}">
+								Job Description </a></th>
+						<th><a
+							th:href="@{'/epage/' + ${currentPage} + '?sortField=department&sortDir=' + ${reverseSortDir}}">
+								Department Name </a></th>
+
+						<th sec:authorize="hasAnyAuthority('admin')">Actions</th>
+					</tr>
+
+				</thead>
+				<tbody>
+					<th:block th:each="employee: ${listEmployees}">
+						<tr>
+							<td th:text="${employee.empid}"></td>
+							<td th:text="${employee.name}"></td>
+							<td th:text="${employee.salary}"></td>
+							<td th:text="${employee.email}"></td>
+							<td th:text="${employee.jobname}"></td>
+							<td th:text="${employee.department.dname}"></td>
+							<td sec:authorize="hasAnyAuthority('admin')"
+								class="btn-group btn-group-justified">
+								<div role="group">
+									<a th:href="@{'/employees/edit/' + ${employee.empid}}"
+										class="btn btn-info">Edit</a>
+								</div>
+								<div role="group">
+									<a th:href="@{'/employees/delete/' + ${employee.empid}}" class="btn btn-danger delBtn">Delete</a>
+								</div>
+							</td>
+						</tr>
+
+					</th:block>
+				</tbody>
+
+			</table>
+
+		</div>
+		<div>
+			Total Items: [[${totalItems}]] - Page [[${currentPage}]] of
+			[[${totalPages}]] &nbsp; - &nbsp; <a th:if="${currentPage > 1}"
+				th:href="@{/epage/1}  + '?sortField=' + ${sortField} + '&sortDir=' + ${sortDir} + ${keyword !=null ? '&keyword=' + keyword : '' } ">First</a>
+
+			<span th:unless="${currentPage > 1}">First</span> &nbsp;&nbsp; <a
+				th:if="${currentPage > 1}"
+				th:href="@{'/epage/' + ${currentPage-1}}  + '?sortField=' + ${sortField} + '&sortDir=' + ${sortDir}+ ${keyword !=null ? '&keyword=' + keyword : '' } ">Previous</a>
+
+			<span th:unless="${currentPage > 1}">Previous</span> &nbsp;&nbsp; <span
+				th:each="i: ${#numbers.sequence(1, totalPages)}"> <a
+				th:if="${i != currentPage}"
+				th:href="@{'/epage/'+ ${i}} + '?sortField=' + ${sortField} + '&sortDir=' + ${sortDir}+ ${keyword !=null ? '&keyword=' + keyword : '' } ">[[${i}]]</a>
+
+				<span th:unless="${i != currentPage}">[[${i}]]</span>&nbsp;&nbsp;
+
+			</span> <a th:if="${currentPage < totalPages}"
+				th:href="@{'/epage/' + ${currentPage+1}}  + '?sortField=' + ${sortField} + '&sortDir=' + ${sortDir}+ ${keyword !=null ? '&keyword=' + keyword : '' } ">Next</a>
+
+			<span th:unless="${currentPage < totalPages}">Next</span>
+			&nbsp;&nbsp; <a th:if="${currentPage < totalPages}"
+				th:href="@{'/epage/' + ${totalPages}}  + '?sortField=' + ${sortField} + '&sortDir=' + ${sortDir}+ ${keyword !=null ? '&keyword=' + keyword : '' } ">Last</a>
+
+			<span th:unless="${currentPage < totalPages}">Last</span>
+		</div>
+	</div>
+	<br>
+	<!-- Bottom of Page [Contains logout, add if they are admin] -->
+	<div sec:authorize="hasAnyAuthority('admin')">
+		<a th:href="@{/employees/new}" class="btn btn-info">Add</a>
+	</div>
+	
+	
+<!-- Start of Delete Modal -->
+	<div class="modal fade" id="deleteModal" data-backdrop="static"	data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+		
+		<div class="modal-dialog">
+		
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Delete Record!</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true"> &times;</span>
+					</button>
+				</div>
+				
+				<div class="modal-body">
+					<div class="alert alert-danger" id="main"></div>
+				</div>
+				
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+					<a class="btn btn-danger" href="" id="delRef">Proceed</a>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- 
+	<br>
+	<a th:href="@{/return}" class="btn btn-info">Return to Home</a>
+	<br>
+ -->
+	<!-- Script to clear the filter and refresh the page when clear is clicked -->
+	<script type="text/javascript">
+		function clearFilter() {
+			window.location = '/employees';
+		};
+
+		$(document).ready(function() {
+			
+			$('.table .delBtn').on('click', function(event) {
+				event.preventDefault();
+				
+				var href = $(this).attr('href');
+
+				//Code to display the product detail on the delete Modal 
+				
+				var table = document.getElementById("table"), rIndex, cIndex;
+				for (i = 0; i < table.rows.length; i++)
+					for (j = 0; j < table.rows[i].cells.length; j++) {
+						table.rows[i].cells[j].onclick = function() {
+							alert("function triggered");
+							rIndex = this.parentElement.rowIndex;
+							var temp = table.rows[rIndex].cells[1].innerHTML;
+							var divmain = document.getElementById("main");
+							divmain.innerHTML = "do you want to delete the employee: " + temp + " ?";
+							alert("innerhtml value: " + divmain.innerHTML);
+						}
+					}
+
+				$('#deleteModal #delRef').attr('href', href);
+				alert("this is the href: "+href);
+				$('#deleteModal').modal('show');
+
+			});
+
+		});
+		
+		$(document).ready(function(){
+			  $(".dropdown-toggle").dropdown();
+			});			
+		
+
+	</script>
+</body>
+</html>

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+<meta charset="ISO-8859-1">
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js" type="text/javascript"></script>
+<script	src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"	type="text/javascript"></script>
+<script	src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" type="text/javascript"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+
+<title>List Departments</title>
+
+</head>
+<body>
+
+	<div>
+		<h1>Department List</h1>
+		<br>
+		<nav
+			class="navbar navbar-expand-lg navbar navbar-dark bg-primary justify-content-between">
+			<div class="container-fluid">
+				<a class="navbar-brand" href="/"> <img
+					th:src="@{/google-home-logo.png}" class="d-inline-block align-top"
+					height="30" width="30">
+				</a>
+				<button class="navbar-toggler" type="button"
+					data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+					aria-controls="navbarSupportedContent" aria-expanded="false"
+					aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				<div class="collapse navbar-collapse justify-content-between"
+					id="navbarSupportedContent">
+					<!-- 
+					<ul class="navbar-nav me-auto mb-2 mb-lg-0">
+						<li class="nav-item"><a class="nav-link active btn btn-secondary"
+							aria-current="page" href="department">Departments</a></li>
+						<li class="nav-item"><a class="nav-link active btn btn-secondary"
+							href="employees">Employees</a></li>
+						<li class="nav-item"><a class="nav-link active btn btn-danger"
+							href="logout">Log Out</a></li>
+					</ul>-->
+
+					<div>
+						<a class="nav-link active btn btn-secondary btn-lg"
+							aria-current="page" href="/department">Departments</a>
+					</div>
+					<div>
+						<a class="nav-link active btn btn-secondary btn-lg"
+							href="/employees">Employees</a>
+					</div>
+					<div>
+						<a class="nav-link active btn btn-danger btn-lg" href="logout">Log
+							Out</a>
+					</div>
+					<div>
+						<form th:action="@{/epage/1}" class="nav-item form-inline my-2 my-lg-0">
+							<div>
+								<input class="form-control mr-sm-2" type="hidden" name="sortField" th:value="${sortField}"></input>
+								<input class="form-control mr-sm-2" type="hidden" name="sortDir" th:value="${sortDir}"><span
+									style="color: white">Filter:</span>
+							</div>
+							<div>
+								<input type="text" name="keyword" th:value="${keyword}"
+									class="form-control" /></input>
+								<input type="submit" value="Search" class="form-control btn btn-success my-2 my-sm-0"></input>
+
+								<input type="button" value="Clear" onClick="clearFilter()"
+									class="form-control btn btn-success my-2 my-sm-0"></input>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</nav>
+
+
+		<br>
+		<div>
+			<table border="1">
+				<thead>
+					<tr align="center">
+						<th><a
+							th:href="@{'/dpage/' + ${currentPage} + '?sortField=did&sortDir=' + ${reverseSortDir}}">
+								Department ID </a></th>
+						<th><a
+							th:href="@{'/dpage/' + ${currentPage} + '?sortField=dname&sortDir=' + ${reverseSortDir}}">
+								Department Name </a></th>
+						<th><a
+							th:href="@{'/dpage/' + ${currentPage} + '?sortField=address&sortDir=' + ${reverseSortDir}}">
+								Address</a></th>
+						<th sec:authorize="hasAnyAuthority('admin')">Actions</th>
+					</tr>
+
+
+				</thead>
+
+				<tbody>
+					<th:block th:each="department: ${listDepartments}">
+
+						<tr>
+							<td th:text="${department.did}"></td>
+							<td th:text="${department.dname}"></td>
+							<td th:text="${department.address}"></td>
+							<td sec:authorize="hasAnyAuthority('admin')"><a
+								th:href="@{'/department/edit/' + ${department.did}}"
+								class="btn btn-info">Edit</a> <a
+								th:href="@{'/department/delete/' + ${department.did}}"
+								class="btn btn-info">Delete</a></td>
+						</tr>
+
+					</th:block>
+				</tbody>
+			</table>
+		</div>
+
+		<div>
+			Total Items: [[${totalItems}]] - Page [[${currentPage}]] of
+			[[${totalPages}]] &nbsp; - &nbsp; <a th:if="${currentPage > 1}"
+				th:href="@{/dpage/1}  + '?sortField=' + ${sortField} + '&sortDir=' + ${sortDir} + ${keyword !=null ? '&keyword=' + keyword : '' } ">First</a>
+
+			<span th:unless="${currentPage > 1}">First</span> &nbsp;&nbsp; <a
+				th:if="${currentPage > 1}"
+				th:href="@{'/dpage/' + ${currentPage-1}}  + '?sortField=' + ${sortField} + '&sortDir=' + ${sortDir}+ ${keyword !=null ? '&keyword=' + keyword : '' } ">Previous</a>
+
+			<span th:unless="${currentPage > 1}">Previous</span> &nbsp;&nbsp; <span
+				th:each="i: ${#numbers.sequence(1, totalPages)}"> <a
+				th:if="${i != currentPage}"
+				th:href="@{'/dpage/'+ ${i}} + '?sortField=' + ${sortField} + '&sortDir=' + ${sortDir}+ ${keyword !=null ? '&keyword=' + keyword : '' } ">[[${i}]]</a>
+
+				<span th:unless="${i != currentPage}">[[${i}]]</span>&nbsp;&nbsp;
+
+			</span> <a th:if="${currentPage < totalPages}"
+				th:href="@{'/dpage/' + ${currentPage+1}}  + '?sortField=' + ${sortField} + '&sortDir=' + ${sortDir}+ ${keyword !=null ? '&keyword=' + keyword : '' } ">Next</a>
+
+			<span th:unless="${currentPage < totalPages}">Next</span>
+			&nbsp;&nbsp; <a th:if="${currentPage < totalPages}"
+				th:href="@{'/dpage/' + ${totalPages}}  + '?sortField=' + ${sortField} + '&sortDir=' + ${sortDir}+ ${keyword !=null ? '&keyword=' + keyword : '' } ">Last</a>
+
+			<span th:unless="${currentPage < totalPages}">Last</span>
+		</div>
+	</div>
+	<br>
+	<!-- Bottom of Page [Contains logout, add if they are admin] -->
+	<div sec:authorize="hasAnyAuthority('admin')">
+		<a th:href="@{/department/new}" class="btn btn-info">Add</a>
+	</div>
+	<!-- 
+	<br>
+	<a th:href="@{/return}" class="btn btn-info">Return to Home</a>
+	<br>
+ -->
+	<!-- Script to clear the filter and refresh the page when clear is clicked -->
+	<script type="text/javascript">
+		function clearFilter() {
+			window.location = '/employees';
+		}
+	</script>
+</body>
+</html>
